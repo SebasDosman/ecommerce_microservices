@@ -1,0 +1,24 @@
+services:
+  product-db:
+    image: mongo:latest
+    container_name: product-db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - product_data:/data/db
+
+  product-service:
+    build: .
+    container_name: product-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@product-db:${MONGO_PORT}/${MONGO_DATABASE}?authSource=${MONGO_AUTH_DB}
+    depends_on:
+      - product-db
+
+volumes:
+  product_data:

@@ -1,0 +1,48 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Maven / Java build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE and tool caches
+.classpath
+.project
+.settings/
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Docker local data and overrides
+docker-compose.override.yml
+docker-data/
+
