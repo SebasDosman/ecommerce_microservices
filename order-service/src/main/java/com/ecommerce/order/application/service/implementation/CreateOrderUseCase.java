@@ -5,25 +5,23 @@ import com.ecommerce.order.application.dto.OrderResponseDto;
 import com.ecommerce.order.application.mapper.OrderItemMapper;
 import com.ecommerce.order.application.mapper.OrderMapper;
 import com.ecommerce.order.application.service.ICreateOrderUseCase;
-import com.ecommerce.order.application.validator.OrderValidator;
 import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.domain.model.OrderItem;
 import com.ecommerce.order.domain.repository.OrderRepository;
 import com.ecommerce.order.infrastructure.client.InventoryClient;
 import com.ecommerce.order.shared.exception.ConflictException;
 import com.ecommerce.order.shared.exception.InternalException;
-import jakarta.ws.rs.core.UriBuilder;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +36,15 @@ public class CreateOrderUseCase implements ICreateOrderUseCase {
   @Value("${ecommerce.services.order.enabled}")
   private boolean ordersEnabled;
 
+  public OrderResponseDto fallbackMethod(OrderRequestDto orderRequestDto, String userId, Throwable throwable) {
+    log.error("Circuir breaker triggered for order creation. Error: {}", throwable.getMessage());
+    throw new InternalException("Order service is currently unavailable. Please try again later.");
+  }
+
   @Override
   @Transactional
+  @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
+  @Retry(name = "inventory")
   public OrderResponseDto create(OrderRequestDto orderRequestDto, String userId) {
     if (!ordersEnabled) {
       log.warn("Order creation is currently disabled.");
