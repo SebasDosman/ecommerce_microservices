@@ -178,8 +178,6 @@ gitGraph
     commit id: "synchronous microservices"
     branch event-driven
     commit id: "RabbitMQ events"
-    branch sagas
-    commit id: "Saga orchestration"
     branch resilience
     commit id: "Resilience4j policies"
     branch observability
@@ -191,10 +189,9 @@ gitGraph
 Planned directions include:
 
 1. Event-driven communication with RabbitMQ.
-2. Saga orchestration and compensating actions for order, inventory, and payment workflows.
-3. Data resilience, idempotency, optimistic locking, and high-throughput persistence strategies.
-4. Observability with centralized logs, metrics, distributed tracing, dashboards, and alerting.
-5. Kubernetes deployment with Helm, health probes, autoscaling, secrets, configuration, and progressive delivery.
+2. Data resilience, idempotency, optimistic locking, and high-throughput persistence strategies.
+3. Observability with centralized logs, metrics, distributed tracing, dashboards, and alerting.
+4. Kubernetes deployment with Helm, health probes, autoscaling, secrets, configuration, and progressive delivery.
 
 ## Local development
 
