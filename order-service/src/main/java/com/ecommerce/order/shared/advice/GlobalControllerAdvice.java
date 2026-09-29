@@ -41,12 +41,12 @@ public class GlobalControllerAdvice {
     return createErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed", fieldErrors, instance);
   }
 
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InternalException.class)
   public Map<String, Object> handleInternalException(InternalException ex, WebRequest webRequest) {
     String instance = WebRequestUtil.extractInstance(webRequest);
     log.error("Internal error at {}: {}", instance, ex.getMessage(), ex);
-    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null, instance);
+    return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), null, instance);
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -2,6 +2,7 @@ package com.ecommerce.order.application.dto;
 
 import com.ecommerce.order.application.validator.OrderValidator;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
@@ -18,4 +19,8 @@ public class OrderRequestDto {
   @NotEmpty(message = OrderValidator.ORDER_ITEMS_REQUIRED)
   @Valid
   private List<OrderItemRequestDto> orderItems;
+
+  @Email(message = OrderValidator.EMAIL_INVALID)
+  @NotBlank(message = OrderValidator.EMAIL_REQUIRED)
+  private String email;
 }

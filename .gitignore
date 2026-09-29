@@ -46,3 +46,5 @@ Thumbs.db
 docker-compose.override.yml
 docker-data/
 
+# Config files
+config-data/

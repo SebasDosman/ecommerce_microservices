@@ -12,6 +12,9 @@ public class OrderValidator {
   public static final String ORDER_ITEM_QUANTITY_REQUIRED = "Order item quantity is required";
   public static final String ORDER_ITEM_QUANTITY_POSITIVE = "Order item quantity must be a positive number";
 
+  public static final String EMAIL_INVALID = "Email does not have a valid format";
+  public static final String EMAIL_REQUIRED = "Email is required";
+
   public static final String ORDER_NOT_FOUND = "Order with ID %s not found";
   public static final String ORDER_IS_NOT_IN_STOCK = "Order item with SKU %s is not in stock for quantity %d";
 }

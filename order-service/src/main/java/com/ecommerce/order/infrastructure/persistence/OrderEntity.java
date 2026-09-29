@@ -23,4 +23,7 @@ public class OrderEntity {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "order_id")
   private List<OrderItemEntity> orderItems;
+
+  @Enumerated(EnumType.STRING)
+  private OrderStatus status;
 }

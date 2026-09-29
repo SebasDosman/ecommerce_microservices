@@ -1,6 +1,8 @@
 package com.ecommerce.order.domain.model;
 
 import java.util.List;
+
+import com.ecommerce.order.infrastructure.persistence.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +17,5 @@ public class Order {
   private String orderNumber;
   private String userId;
   private List<OrderItem> orderItems;
+  private OrderStatus status;
 }
