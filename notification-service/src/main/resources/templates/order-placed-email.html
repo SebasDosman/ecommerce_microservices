@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Placed Confirmation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f3f4f6;
+        color: #111827;
+        line-height: 1.6;
+      }
+
+      .email-container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 32px;
+        background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        color: #ffffff;
+        text-align: center;
+      }
+
+      .header-brand {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        opacity: 0.9;
+        margin-bottom: 12px;
+      }
+
+      .header-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .header-subtitle {
+        font-size: 14px;
+        opacity: 0.85;
+        margin-top: 8px;
+      }
+
+      .content {
+        padding: 32px;
+      }
+
+      .greeting {
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #1f2937;
+      }
+
+      .message {
+        font-size: 15px;
+        line-height: 1.8;
+        margin-bottom: 24px;
+        color: #4b5563;
+      }
+
+      .alert-box {
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        line-height: 1.6;
+        background-color: #d1fae5;
+        border-left: 4px solid #10b981;
+        color: #065f46;
+      }
+
+      .order-details {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .detail-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6b7280;
+        margin-bottom: 6px;
+      }
+
+      .detail-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+        word-break: break-all;
+      }
+
+      .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+        font-size: 14px;
+      }
+
+      .items-table thead {
+        background-color: #f3f4f6;
+      }
+
+      .items-table th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #6b7280;
+        border-bottom: 2px solid #e5e7eb;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .items-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #374151;
+      }
+
+      .items-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .price-cell {
+        text-align: right;
+        font-weight: 500;
+      }
+
+      .total-section {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 24px;
+      }
+
+      .total-box {
+        background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        color: #ffffff;
+        padding: 20px 28px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 280px;
+      }
+
+      .total-label {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.85;
+      }
+
+      .total-amount {
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .action-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        padding: 12px 28px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        margin: 20px 0;
+        transition: all 0.2s;
+      }
+
+      .action-button:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      }
+
+      .divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 24px 0;
+      }
+
+      .footer {
+        background-color: #f9fafb;
+        padding: 24px 32px;
+        text-align: center;
+        border-top: 1px solid #e5e7eb;
+        font-size: 12px;
+        color: #6b7280;
+        line-height: 1.8;
+      }
+
+      .footer-link {
+        color: #10b981;
+        text-decoration: none;
+      }
+
+      .footer-link:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 600px) {
+        .email-container {
+          margin: 0;
+          border-radius: 0;
+        }
+
+        .header {
+          padding: 24px;
+        }
+
+        .content {
+          padding: 24px;
+        }
+
+        .order-details {
+          grid-template-columns: 1fr;
+        }
+
+        .total-box {
+          min-width: auto;
+        }
+
+        .items-table {
+          font-size: 12px;
+        }
+
+        .items-table th,
+        .items-table td {
+          padding: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        <div class="header-brand">Ecommerce</div>
+        <h1 class="header-title">Order Placed</h1>
+        <div class="header-subtitle">Thank you for your purchase!</div>
+      </div>
+
+      <div class="content">
+        <div class="greeting">Hello,</div>
+
+        <div class="message">
+          Your order <strong th:text="${orderNumber}">#000000</strong> has been successfully received and is being prepared for shipment.
+        </div>
+
+        <div class="alert-box">
+          ✓ Your payment has been processed and confirmed. You will receive a tracking number once your order ships.
+        </div>
+
+        <div class="order-details">
+          <div class="detail-group">
+            <div class="detail-label">Email</div>
+            <div class="detail-value" th:text="${customerEmail}">customer@example.com</div>
+          </div>
+          <div class="detail-group">
+            <div class="detail-label">Order Number</div>
+            <div class="detail-value" th:text="${orderNumber}">#000000</div>
+          </div>
+        </div>
+
+        <table class="items-table" th:if="${orderItems != null && !orderItems.isEmpty()}">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Qty</th>
+              <th class="price-cell">Unit Price</th>
+              <th class="price-cell">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${orderItems}">
+              <td th:text="${item.sku}">SKU-001</td>
+              <td class="price-cell" th:text="${item.quantity}">1</td>
+              <td class="price-cell" th:text="${#numbers.formatDecimal(item.price, 1, 2, 'COMMA')} + ' USD'">
+                10.00 USD
+              </td>
+              <td class="price-cell" th:text="${#numbers.formatDecimal(item.subtotal, 1, 2, 'COMMA')} + ' USD'">
+                10.00 USD
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="total-section" th:if="${orderTotal != null}">
+          <div class="total-box">
+            <div class="total-label">Total Amount</div>
+            <div class="total-amount" th:text="${#numbers.formatDecimal(orderTotal, 1, 2, 'COMMA')} + ' USD'">0.00 USD</div>
+          </div>
+        </div>
+
+        <a href="https://ecommerce.local/orders" class="action-button">Track Your Order</a>
+      </div>
+
+      <div class="footer">
+        <p>If you did not place this order, please contact our support team immediately.</p>
+        <p>
+          <a href="https://ecommerce.local/support" class="footer-link">Contact Support</a> •
+          <a href="https://ecommerce.local/orders" class="footer-link">View Your Orders</a>
+        </p>
+        <p>&copy; 2026 Ecommerce. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -14,7 +14,7 @@ public class RabbitMQConfig {
   public static final String ORDER_COMPLETED_QUEUE_NAME = "order-completed-queue";
   public static final String ORDER_CANCELLED_QUEUE_NAME = "order-cancelled-queue";
   public static final String ORDER_EXCHANGE_NAME = "order-events";
-  public static final String ORDER_ROUTING_KEY = "order.placed";
+  public static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
   public static final String ORDER_CANCELLED_ROUTING_KEY = "order.cancelled";
   public static final String ORDER_COMPLETED_ROUTING_KEY = "order.completed";
 

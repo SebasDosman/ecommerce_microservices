@@ -27,7 +27,7 @@ public class RabbitDomainEventPublisher implements DomainEventPublisher {
     
     rabbitTemplate.convertAndSend(
         RabbitMQConfig.ORDER_EXCHANGE_NAME,
-        RabbitMQConfig.ORDER_ROUTING_KEY,
+        RabbitMQConfig.ORDER_PLACED_ROUTING_KEY,
         event);
 
     log.info("Published order placed event for order: {}", order.getOrderNumber());
