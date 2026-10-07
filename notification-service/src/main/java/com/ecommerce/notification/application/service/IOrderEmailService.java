@@ -6,8 +6,6 @@ import com.ecommerce.notification.application.dto.OrderEmailCommandDto;
 
 public interface IOrderEmailService {
   void sendOrderPlaced(OrderEmailCommandDto orderEmailCommand);
-
   void sendOrderConfirmed(OrderConfirmedEmailCommandDto orderEmailCommand);
-
   void sendOrderCancelled(OrderCancelledEmailCommandDto orderEmailCommand);
 }
