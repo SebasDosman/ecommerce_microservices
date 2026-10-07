@@ -3,3 +3,24 @@ spring:
     name: notification-service
   config:
     import: "optional:configserver:http://localhost:8888"
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+
+ecommerce:
+  mail:
+    from: no-reply@ecommerce.local
