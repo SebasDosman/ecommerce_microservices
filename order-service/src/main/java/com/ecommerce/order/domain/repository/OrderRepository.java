@@ -12,4 +12,5 @@ public interface OrderRepository {
   void deleteById(Long id);
   boolean existsById(Long id);
   Slice<Order> findByUserId(Pageable pageable, String userId);
+  Optional<Order> findByOrderNumber(String orderNumber);
 }

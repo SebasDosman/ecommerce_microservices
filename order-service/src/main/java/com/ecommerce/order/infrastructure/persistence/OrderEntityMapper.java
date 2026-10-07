@@ -5,7 +5,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface OrderEntityMapper {
-    Order toDomainModel(OrderEntity entity);
-
-    OrderEntity toEntity(Order order);
+  Order toDomainModel(OrderEntity entity);
+  OrderEntity toEntity(Order order);
 }

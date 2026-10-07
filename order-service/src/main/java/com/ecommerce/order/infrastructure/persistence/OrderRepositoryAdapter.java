@@ -48,4 +48,11 @@ public class OrderRepositoryAdapter implements OrderRepository {
         .findByUserId(pageable, userId)
         .map(orderEntityMapper::toDomainModel);
   }
+
+  @Override
+  public Optional<Order> findByOrderNumber(String orderNumber) {
+    return orderEntityRepository
+        .findByOrderNumber(orderNumber)
+        .map(orderEntityMapper::toDomainModel);
+  }
 }

@@ -16,5 +16,6 @@ public class OrderValidator {
   public static final String EMAIL_REQUIRED = "Email is required";
 
   public static final String ORDER_NOT_FOUND = "Order with ID %s not found";
+  public static final String ORDER_WITH_ORDER_NUMBER_NOT_FOUND = "Order with order number %s not found";
   public static final String ORDER_IS_NOT_IN_STOCK = "Order item with SKU %s is not in stock for quantity %d";
 }

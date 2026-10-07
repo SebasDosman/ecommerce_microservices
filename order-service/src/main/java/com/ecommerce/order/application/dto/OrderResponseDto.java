@@ -2,7 +2,7 @@ package com.ecommerce.order.application.dto;
 
 import java.util.List;
 
-import com.ecommerce.order.infrastructure.persistence.OrderStatus;
+import com.ecommerce.order.domain.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.ecommerce.order.infrastructure.persistence;
 
+import com.ecommerce.order.domain.model.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

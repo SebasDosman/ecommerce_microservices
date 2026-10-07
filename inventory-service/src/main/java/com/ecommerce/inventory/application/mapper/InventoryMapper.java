@@ -9,7 +9,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface InventoryMapper {
-  @Mapping(target = "inStock", expression = "java(inventory.getQuantity() > 0)")
+  @Mapping(target = "inStock", expression = "java(inventory.isInStock())")
   InventoryResponseDto toInventoryResponseDto(Inventory inventory);
 
   @Mapping(target = "id", ignore = true)

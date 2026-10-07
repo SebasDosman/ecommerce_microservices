@@ -1,8 +1,8 @@
 package com.ecommerce.notification.application.service.implementation;
 
+import com.ecommerce.notification.application.dto.OrderEmailCommandDto;
 import com.ecommerce.notification.application.service.IOrderEmailService;
 import com.ecommerce.notification.domain.model.OrderEmailItemView;
-import com.ecommerce.notification.infrastructure.event.OrderPlacedEvent;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.math.BigDecimal;
@@ -30,21 +30,21 @@ public class OrderEmailUseCase implements IOrderEmailService {
   private String fromEmail;
 
   @Override
-  public void sendOrderConfirmation(OrderPlacedEvent orderPlacedEvent) {
-    if (orderPlacedEvent == null
-        || orderPlacedEvent.email() == null
-        || orderPlacedEvent.email().isBlank()) {
+  public void sendOrderConfirmation(OrderEmailCommandDto orderEmailCommand) {
+    if (orderEmailCommand == null
+        || orderEmailCommand.getEmail() == null
+        || orderEmailCommand.getEmail().isBlank()) {
       log.warn("Order confirmation email skipped because recipient email is missing.");
       return;
     }
 
-    List<OrderEmailItemView> items = buildOrderItems(orderPlacedEvent);
+    List<OrderEmailItemView> items = buildOrderItems(orderEmailCommand);
     BigDecimal total =
         items.stream().map(OrderEmailItemView::subtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     Context context = new Context(Locale.forLanguageTag("es"));
-    context.setVariable("customerEmail", orderPlacedEvent.email());
-    context.setVariable("orderNumber", orderPlacedEvent.orderNumber());
+    context.setVariable("customerEmail", orderEmailCommand.getEmail());
+    context.setVariable("orderNumber", orderEmailCommand.getOrderNumber());
     context.setVariable("orderItems", items);
     context.setVariable("orderTotal", total);
 
@@ -59,36 +59,36 @@ public class OrderEmailUseCase implements IOrderEmailService {
               StandardCharsets.UTF_8.name());
 
       helper.setFrom(fromEmail);
-      helper.setTo(orderPlacedEvent.email());
-      helper.setSubject("Order confirmation: " + orderPlacedEvent.orderNumber());
+      helper.setTo(orderEmailCommand.getEmail());
+      helper.setSubject("Order confirmation: " + orderEmailCommand.getOrderNumber());
       helper.setText(htmlContent, true);
 
       javaMailSender.send(mimeMessage);
       log.info(
           "Order confirmation email sent successfully to {} for order {}",
-          orderPlacedEvent.email(),
-          orderPlacedEvent.orderNumber());
+          orderEmailCommand.getEmail(),
+          orderEmailCommand.getOrderNumber());
     } catch (MessagingException ex) {
       log.error(
           "Error sending confirmation email to {} for order {}",
-          orderPlacedEvent.email(),
-          orderPlacedEvent.orderNumber(),
+          orderEmailCommand.getEmail(),
+          orderEmailCommand.getOrderNumber(),
           ex);
       throw new IllegalStateException("Unable to send order confirmation email", ex);
     }
   }
 
-  private List<OrderEmailItemView> buildOrderItems(OrderPlacedEvent orderPlacedEvent) {
+  private List<OrderEmailItemView> buildOrderItems(OrderEmailCommandDto orderEmailCommand) {
     List<OrderEmailItemView> orderItems = new ArrayList<>();
 
-    if (orderPlacedEvent.orderItems() == null || orderPlacedEvent.orderItems().isEmpty()) {
+    if (orderEmailCommand.getOrderItems() == null || orderEmailCommand.getOrderItems().isEmpty()) {
       return orderItems;
     }
 
-    for (OrderPlacedEvent.OrderItemEvent item : orderPlacedEvent.orderItems()) {
-      BigDecimal unitPrice = parsePrice(item.price());
-      BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(item.quantity()));
-      orderItems.add(new OrderEmailItemView(item.sku(), item.quantity(), unitPrice, subtotal));
+    for (OrderEmailCommandDto.OrderItemEmailDto item : orderEmailCommand.getOrderItems()) {
+      BigDecimal unitPrice = parsePrice(item.getPrice());
+      BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+      orderItems.add(new OrderEmailItemView(item.getSku(), item.getQuantity(), unitPrice, subtotal));
     }
 
     return orderItems;

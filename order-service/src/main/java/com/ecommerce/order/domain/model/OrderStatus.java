@@ -1,4 +1,4 @@
-package com.ecommerce.order.infrastructure.persistence;
+package com.ecommerce.order.domain.model;
 
 public enum OrderStatus {
   PLACED,

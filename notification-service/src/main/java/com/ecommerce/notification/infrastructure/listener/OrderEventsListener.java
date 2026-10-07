@@ -1,5 +1,6 @@
 package com.ecommerce.notification.infrastructure.listener;
 
+import com.ecommerce.notification.application.mapper.OrderEventToEmailCommandMapper;
 import com.ecommerce.notification.application.service.IOrderEmailService;
 import com.ecommerce.notification.infrastructure.config.RabbitMQConfig;
 import com.ecommerce.notification.infrastructure.event.OrderPlacedEvent;
@@ -13,18 +14,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderEventsListener {
   private final IOrderEmailService orderEmailService;
+  private final OrderEventToEmailCommandMapper eventMapper;
 
   @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE_NAME)
-  public void handleOrderPlacedEvent(OrderPlacedEvent orderPlacedEvent) {
+  public void handleOrderCompletedEvent(OrderPlacedEvent orderPlacedEvent) {
     try {
       log.info(
-          "Received order placed event for order {} and email {}",
+          "Received order completed event for order {} and email {}",
           orderPlacedEvent.orderNumber(),
           orderPlacedEvent.email());
-      orderEmailService.sendOrderConfirmation(orderPlacedEvent);
+      var orderEmailCommand = eventMapper.mapOrderPlacedEventToEmailCommand(orderPlacedEvent);
+      orderEmailService.sendOrderConfirmation(orderEmailCommand);
     } catch (Exception ex) {
       log.error(
-          "Error processing order placed event for order {}",
+          "Error processing order completed event for order {}",
           orderPlacedEvent.orderNumber(),
           ex);
       throw ex;

@@ -13,4 +13,8 @@ public class Inventory {
   private Long id;
   private String sku;
   private Integer quantity;
+
+  public boolean isInStock() {
+    return this.quantity > 0;
+  }
 }
