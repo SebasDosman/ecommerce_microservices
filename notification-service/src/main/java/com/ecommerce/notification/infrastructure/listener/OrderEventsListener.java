@@ -18,7 +18,7 @@ public class OrderEventsListener {
   private final IOrderEmailService orderEmailService;
   private final OrderEventToEmailCommandMapper eventMapper;
 
-  @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE_NAME)
+  @RabbitListener(queues = RabbitMQConfig.ORDER_PLACED_QUEUE_NAME)
   public void handleOrderPlacedEvent(OrderPlacedEvent orderPlacedEvent) {
     try {
       log.info(
@@ -36,7 +36,7 @@ public class OrderEventsListener {
     }
   }
 
-  @RabbitListener(queues = "order-confirmed-queue")
+  @RabbitListener(queues = RabbitMQConfig.ORDER_CONFIRMED_QUEUE_NAME)
   public void handleOrderConfirmedEvent(OrderConfirmedEvent orderConfirmedEvent) {
     try {
       log.info(
@@ -54,7 +54,7 @@ public class OrderEventsListener {
     }
   }
 
-  @RabbitListener(queues = "order-cancelled-queue")
+  @RabbitListener(queues = RabbitMQConfig.ORDER_CANCELLED_QUEUE_NAME)
   public void handleOrderCancelledEvent(OrderCancelledEvent orderCancelledEvent) {
     try {
       log.info(

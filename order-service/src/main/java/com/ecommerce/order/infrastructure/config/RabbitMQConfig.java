@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
+  public static final String ORDER_PLACED_QUEUE_NAME = "order-placed-queue";
   public static final String ORDER_COMPLETED_QUEUE_NAME = "order-completed-queue";
   public static final String ORDER_CANCELLED_QUEUE_NAME = "order-cancelled-queue";
   public static final String ORDER_EXCHANGE_NAME = "order-events";
@@ -29,6 +30,11 @@ public class RabbitMQConfig {
   }
 
   @Bean
+  public Queue orderPlacedQueue() {
+    return new Queue(ORDER_PLACED_QUEUE_NAME, true);
+  }
+
+  @Bean
   public Queue orderCompletedQueue() {
     return new Queue(ORDER_COMPLETED_QUEUE_NAME, true);
   }
@@ -36,6 +42,11 @@ public class RabbitMQConfig {
   @Bean
   public Queue orderCancelledQueue() {
     return new Queue(ORDER_CANCELLED_QUEUE_NAME, true);
+  }
+
+  @Bean
+  public Binding orderPlacedBinding(Queue orderPlacedQueue, TopicExchange topicExchange) {
+    return BindingBuilder.bind(orderPlacedQueue).to(topicExchange).with(ORDER_PLACED_ROUTING_KEY);
   }
 
   @Bean
