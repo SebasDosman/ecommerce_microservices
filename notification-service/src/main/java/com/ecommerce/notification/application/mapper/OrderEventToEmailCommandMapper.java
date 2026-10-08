@@ -3,9 +3,7 @@ package com.ecommerce.notification.application.mapper;
 import com.ecommerce.notification.application.dto.OrderCancelledEmailCommandDto;
 import com.ecommerce.notification.application.dto.OrderConfirmedEmailCommandDto;
 import com.ecommerce.notification.application.dto.OrderEmailCommandDto;
-import com.ecommerce.notification.infrastructure.event.OrderCancelledEvent;
-import com.ecommerce.notification.infrastructure.event.OrderConfirmedEvent;
-import com.ecommerce.notification.infrastructure.event.OrderPlacedEvent;
+import com.ecommerce.notification.infrastructure.event.OrderEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderEventToEmailCommandMapper {
 
-  public OrderEmailCommandDto mapOrderPlacedEventToEmailCommand(OrderPlacedEvent orderPlacedEvent) {
+  public OrderEmailCommandDto mapOrderPlacedEventToEmailCommand(OrderEvent orderPlacedEvent) {
     if (orderPlacedEvent == null) {
       return null;
     }
@@ -41,7 +39,7 @@ public class OrderEventToEmailCommandMapper {
   }
 
   public OrderConfirmedEmailCommandDto mapOrderConfirmedEventToEmailCommand(
-      OrderConfirmedEvent orderConfirmedEvent) {
+      OrderEvent orderConfirmedEvent) {
     if (orderConfirmedEvent == null) {
       return null;
     }
@@ -54,7 +52,7 @@ public class OrderEventToEmailCommandMapper {
   }
 
   public OrderCancelledEmailCommandDto mapOrderCancelledEventToEmailCommand(
-      OrderCancelledEvent orderCancelledEvent) {
+      OrderEvent orderCancelledEvent) {
     if (orderCancelledEvent == null) {
       return null;
     }

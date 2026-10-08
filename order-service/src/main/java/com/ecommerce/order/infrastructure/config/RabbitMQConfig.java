@@ -11,13 +11,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-  public static final String ORDER_PLACED_QUEUE_NAME = "order-placed-queue";
-  public static final String ORDER_COMPLETED_QUEUE_NAME = "order-completed-queue";
-  public static final String ORDER_CANCELLED_QUEUE_NAME = "order-cancelled-queue";
+  public static final String ORDER_STATUS_EVENTS_QUEUE_NAME = "order-status-events-queue";
   public static final String ORDER_EXCHANGE_NAME = "order-events";
   public static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
   public static final String ORDER_CANCELLED_ROUTING_KEY = "order.cancelled";
-  public static final String ORDER_COMPLETED_ROUTING_KEY = "order.completed";
+  public static final String ORDER_CONFIRMED_ROUTING_KEY = "order.confirmed";
 
   @Bean
   public MessageConverter messageConverter() {
@@ -30,32 +28,17 @@ public class RabbitMQConfig {
   }
 
   @Bean
-  public Queue orderPlacedQueue() {
-    return new Queue(ORDER_PLACED_QUEUE_NAME, true);
+  public Queue orderStatusEventsQueue() {
+    return new Queue(ORDER_STATUS_EVENTS_QUEUE_NAME, true);
   }
 
   @Bean
-  public Queue orderCompletedQueue() {
-    return new Queue(ORDER_COMPLETED_QUEUE_NAME, true);
+  public Binding orderConfirmedBinding(Queue orderStatusEventsQueue, TopicExchange topicExchange) {
+    return BindingBuilder.bind(orderStatusEventsQueue).to(topicExchange).with(ORDER_CONFIRMED_ROUTING_KEY);
   }
 
   @Bean
-  public Queue orderCancelledQueue() {
-    return new Queue(ORDER_CANCELLED_QUEUE_NAME, true);
-  }
-
-  @Bean
-  public Binding orderPlacedBinding(Queue orderPlacedQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(orderPlacedQueue).to(topicExchange).with(ORDER_PLACED_ROUTING_KEY);
-  }
-
-  @Bean
-  public Binding orderCompletedBinding(Queue orderCompletedQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(orderCompletedQueue).to(topicExchange).with(ORDER_COMPLETED_ROUTING_KEY);
-  }
-
-  @Bean
-  public Binding orderCancelledBinding(Queue orderCancelledQueue, TopicExchange topicExchange) {
-    return BindingBuilder.bind(orderCancelledQueue).to(topicExchange).with(ORDER_CANCELLED_ROUTING_KEY);
+  public Binding orderCancelledBinding(Queue orderStatusEventsQueue, TopicExchange topicExchange) {
+    return BindingBuilder.bind(orderStatusEventsQueue).to(topicExchange).with(ORDER_CANCELLED_ROUTING_KEY);
   }
 }

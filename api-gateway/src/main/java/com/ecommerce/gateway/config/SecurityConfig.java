@@ -1,6 +1,7 @@
 package com.ecommerce.gateway.config;
 
 import com.ecommerce.gateway.enums.Role;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,10 +14,14 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+  @Value("${spring.security.oauth2.client.registration.api-gateway-client.client-id:api-gateway-client}")
+  private String gatewayClientId;
+
   @Bean
   public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
     return serverHttpSecurity
@@ -62,24 +67,42 @@ public class SecurityConfig {
 
     jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
         jwt -> {
-          Object realmAccessClaim = jwt.getClaims().get("realm_access");
-          if (!(realmAccessClaim instanceof Map<?, ?> realmAccess)) {
-            return Collections.emptyList();
-          }
-
-          Object rolesClaim = realmAccess.get("roles");
-          if (!(rolesClaim instanceof Collection<?> roles)) {
-            return Collections.emptyList();
-          }
-
-          return roles.stream()
+          return extractRoles(jwt).stream()
               .filter(Objects::nonNull)
-              .map(Object::toString)
-              .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role.toUpperCase(Locale.ROOT))
+              .map(String::trim)
+              .filter(role -> !role.isBlank())
+              .map(role -> role.startsWith("ROLE_") ? role.substring("ROLE_".length()) : role)
+              .map(role -> "ROLE_" + role.toUpperCase(Locale.ROOT))
+              .distinct()
               .map(SimpleGrantedAuthority::new)
               .collect(Collectors.toList());
         });
 
     return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
+  }
+
+  private Collection<String> extractRoles(org.springframework.security.oauth2.jwt.Jwt jwt) {
+    Stream<String> realmRoles = rolesFromMap(jwt.getClaims().get("realm_access"));
+
+    Object resourceAccessClaim = jwt.getClaims().get("resource_access");
+    Stream<String> clientRoles = Stream.empty();
+    if (resourceAccessClaim instanceof Map<?, ?> resourceAccess) {
+      clientRoles = rolesFromMap(resourceAccess.get(gatewayClientId));
+    }
+
+    return Stream.concat(realmRoles, clientRoles).toList();
+  }
+
+  private Stream<String> rolesFromMap(Object claim) {
+    if (!(claim instanceof Map<?, ?> values)) {
+      return Stream.empty();
+    }
+
+    Object rolesClaim = values.get("roles");
+    if (!(rolesClaim instanceof Collection<?> roles)) {
+      return Stream.empty();
+    }
+
+    return roles.stream().filter(String.class::isInstance).map(String.class::cast);
   }
 }

@@ -3,8 +3,7 @@ package com.ecommerce.inventory.infrastructure.listener;
 import com.ecommerce.inventory.application.service.IGetInventoryUseCase;
 import com.ecommerce.inventory.application.service.IUpdateInventoryUseCase;
 import com.ecommerce.inventory.infrastructure.config.RabbitMQConfig;
-import com.ecommerce.inventory.infrastructure.event.OrderCancelledEvent;
-import com.ecommerce.inventory.infrastructure.event.OrderPlacedEvent;
+import com.ecommerce.inventory.infrastructure.event.OrderEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -19,8 +18,8 @@ public class OrderEventsListener {
   private final IGetInventoryUseCase getInventoryUseCase;
   private final RabbitTemplate rabbitTemplate;
 
-  @RabbitListener(queues = RabbitMQConfig.INVENTORY_QUEUE_NAME)
-  public void handleOrderPlacedEvent(OrderPlacedEvent orderPlacedEvent) {
+  @RabbitListener(queues = RabbitMQConfig.INVENTORY_ORDER_EVENTS_QUEUE_NAME)
+  public void handleOrderPlacedEvent(OrderEvent orderPlacedEvent) {
     try {
       boolean areAllProductsInStock =
           orderPlacedEvent.orderItems().stream()
@@ -31,6 +30,7 @@ public class OrderEventsListener {
       if (!areAllProductsInStock) {
         log.info("Order PlacedEvent not in stock");
         cancelOrder(orderPlacedEvent, "Some products are not in stock");
+        return;
       }
 
       orderPlacedEvent
@@ -45,21 +45,27 @@ public class OrderEventsListener {
               });
       rabbitTemplate.convertAndSend(
           RabbitMQConfig.ORDER_EXCHANGE_NAME,
-          RabbitMQConfig.ORDER_COMPLETED_ROUTING_KEY,
-          orderPlacedEvent);
+          RabbitMQConfig.ORDER_CONFIRMED_ROUTING_KEY,
+          new OrderEvent(
+              OrderEvent.CONFIRMED,
+              orderPlacedEvent.orderNumber(),
+              orderPlacedEvent.email(),
+              null,
+              null));
     } catch (Exception e) {
       log.error("Error occurred while processing order placed event", e);
       cancelOrder(orderPlacedEvent, "Error occurred while processing order placed event");
     }
   }
 
-  private void cancelOrder(OrderPlacedEvent orderPlacedEvent, String reason) {
-    OrderCancelledEvent orderCancelledEvent =
-        OrderCancelledEvent.builder()
-            .orderNumber(orderPlacedEvent.orderNumber())
-            .email(orderPlacedEvent.email())
-            .cancelReason(reason)
-            .build();
+  private void cancelOrder(OrderEvent orderPlacedEvent, String reason) {
+    OrderEvent orderCancelledEvent =
+        new OrderEvent(
+            OrderEvent.CANCELLED,
+            orderPlacedEvent.orderNumber(),
+            orderPlacedEvent.email(),
+            null,
+            reason);
 
     rabbitTemplate.convertAndSend(
         RabbitMQConfig.ORDER_EXCHANGE_NAME,

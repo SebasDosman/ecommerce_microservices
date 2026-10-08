@@ -17,13 +17,13 @@ public class RabbitDomainEventPublisher implements DomainEventPublisher {
   @Override
   public void publishOrderPlaced(Order order, String email) {
     var orderItemEvents = order.getOrderItems().stream()
-        .map(item -> new OrderPlacedEvent.OrderItemEvent(
+        .map(item -> new OrderEvent.OrderItemEvent(
             item.getSku(),
             item.getPrice() != null ? item.getPrice().toPlainString() : "0.00",
             item.getQuantity()))
         .toList();
 
-    var event = new OrderPlacedEvent(order.getOrderNumber(), email, orderItemEvents);
+    var event = new OrderEvent(OrderEvent.PLACED, order.getOrderNumber(), email, orderItemEvents, null);
     
     rabbitTemplate.convertAndSend(
         RabbitMQConfig.ORDER_EXCHANGE_NAME,

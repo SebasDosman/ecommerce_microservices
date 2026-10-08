@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
   public static final String ORDER_EXCHANGE_NAME = "order-events";
-  public static final String INVENTORY_QUEUE_NAME = "inventory-queue";
+  public static final String INVENTORY_ORDER_EVENTS_QUEUE_NAME = "inventory-order-events-queue";
   public static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
   public static final String ORDER_CANCELLED_ROUTING_KEY = "order.cancelled";
-  public static final String ORDER_COMPLETED_ROUTING_KEY = "order.completed";
+  public static final String ORDER_CONFIRMED_ROUTING_KEY = "order.confirmed";
 
   @Bean
   public MessageConverter messageConverter() {
@@ -28,12 +28,12 @@ public class RabbitMQConfig {
   }
 
   @Bean
-  public Queue inventoryQueue() {
-    return new Queue(INVENTORY_QUEUE_NAME, true);
+  public Queue inventoryOrderEventsQueue() {
+    return new Queue(INVENTORY_ORDER_EVENTS_QUEUE_NAME, true);
   }
 
   @Bean
-  public Binding binding(Queue inventoryQueue, TopicExchange orderEventExchange) {
-    return BindingBuilder.bind(inventoryQueue).to(orderEventExchange).with(ORDER_PLACED_ROUTING_KEY);
+  public Binding binding(Queue inventoryOrderEventsQueue, TopicExchange orderEventExchange) {
+    return BindingBuilder.bind(inventoryOrderEventsQueue).to(orderEventExchange).with(ORDER_PLACED_ROUTING_KEY);
   }
 }
