@@ -5,7 +5,7 @@ import com.ecommerce.order.application.dto.OrderResponseDto;
 import com.ecommerce.order.application.mapper.OrderItemMapper;
 import com.ecommerce.order.application.mapper.OrderMapper;
 import com.ecommerce.order.application.service.ICreateOrderUseCase;
-import com.ecommerce.order.domain.event.DomainEventPublisher;
+import com.ecommerce.order.application.service.ICreateOutboxEventUseCase;
 import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.domain.model.OrderItem;
 import com.ecommerce.order.domain.model.OrderStatus;
@@ -29,7 +29,7 @@ public class CreateOrderUseCase implements ICreateOrderUseCase {
   private final OrderRepository orderRepository;
   private final OrderMapper orderMapper;
   private final OrderItemMapper orderItemMapper;
-  private final DomainEventPublisher eventPublisher;
+  private final ICreateOutboxEventUseCase createOutboxEventUseCase;
 
   @Value("${ecommerce.services.order.enabled}")
   private boolean ordersEnabled;
@@ -48,7 +48,7 @@ public class CreateOrderUseCase implements ICreateOrderUseCase {
     log.info("Creating order: {}", order.getOrderNumber());
     Order orderSaved = orderRepository.save(order);
 
-    eventPublisher.publishOrderPlaced(orderSaved, orderRequestDto.getEmail());
+    createOutboxEventUseCase.create(orderSaved, orderRequestDto.getEmail());
 
     return orderMapper.toOrderResponseDto(orderSaved);
   }

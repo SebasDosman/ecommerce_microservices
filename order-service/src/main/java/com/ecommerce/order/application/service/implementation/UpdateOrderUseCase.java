@@ -8,12 +8,14 @@ import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.domain.model.OrderStatus;
 import com.ecommerce.order.domain.repository.OrderRepository;
 import com.ecommerce.order.shared.exception.NotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateOrderUseCase implements IUpdateOrderUseCase {
   private final OrderRepository orderRepository;
   private final OrderMapper orderMapper;
@@ -31,6 +33,7 @@ public class UpdateOrderUseCase implements IUpdateOrderUseCase {
                             OrderValidator.ORDER_WITH_ORDER_NUMBER_NOT_FOUND, orderNumber)));
 
     order.setStatus(orderStatus);
+    log.info("Updating order status for order number: {}", orderNumber);
 
     return orderMapper.toOrderResponseDto(orderRepository.save(order));
   }
