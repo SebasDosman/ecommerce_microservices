@@ -251,8 +251,7 @@ Configuration is externalized under `config-data/` and loaded through Spring Clo
 The initial branch contains the synchronous microservice baseline. Future branches should isolate architectural changes so each evolution can be reviewed and tested independently:
 
 - `event-driven-rabbitmq`
-- `saga-orchestration`
-- `resilience-patterns`
+- `resilience`
 - `observability`
 - `kubernetes-platform`
 
