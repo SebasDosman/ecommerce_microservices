@@ -11,6 +11,6 @@ RUN ./mvnw clean package -DskipTests
 # Step 2: Create a lightweight image for the application
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/target/*.jar product-service.jar
-EXPOSE 8081
-ENTRYPOINT ["java", "-jar", "product-service.jar"]
+COPY --from=builder /app/target/*.jar api-gateway.jar
+EXPOSE 9000
+ENTRYPOINT ["java", "-jar", "api-gateway.jar"]
