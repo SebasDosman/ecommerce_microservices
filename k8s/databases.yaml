@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-db
+spec:
+  selector:
+    matchLabels:
+      app: product-db
+  template:
+    metadata:
+      labels:
+        app: product-db
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: ${MONGO_USERNAME}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: ${MONGO_PASSWORD}
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: product-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-db
+spec:
+  selector:
+    app: product-db
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-db
+spec:
+  selector:
+    matchLabels:
+      app: inventory-db
+  template:
+    metadata:
+      labels:
+        app: inventory-db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: ${MYSQL_ROOT_PASSWORD}
+            - name: MYSQL_DATABASE
+              value: ${MYSQL_DATABASE}
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: inventory-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-db
+spec:
+  selector:
+    app: inventory-db
+  ports:
+    - port: 3306
+      targetPort: 3306
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-db
+spec:
+  selector:
+    matchLabels:
+      app: order-db
+  template:
+    metadata:
+      labels:
+        app: order-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: ${POSTGRES_USER}
+            - name: POSTGRES_PASSWORD
+              value: ${POSTGRES_PASSWORD}
+            - name: POSTGRES_DB
+              value: ${POSTGRES_DB}
+          volumeMounts:
+            - name: order-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: order-storage
+          persistentVolumeClaim:
+            claimName: order-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-db
+spec:
+  selector:
+    app: order-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-db
+spec:
+  selector:
+    matchLabels:
+      app: keycloak-db
+  template:
+    metadata:
+      labels:
+        app: keycloak-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: ${POSTGRES_KEYCLOAK_USER}
+            - name: POSTGRES_PASSWORD
+              value: ${POSTGRES_KEYCLOAK_PASSWORD}
+            - name: POSTGRES_DB
+              value: ${POSTGRES_KEYCLOAK_DB}
+          volumeMounts:
+            - name: keycloak-db-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: keycloak-db-storage
+          persistentVolumeClaim:
+            claimName: keycloak-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-db
+spec:
+  selector:
+    app: keycloak-db
+  ports:
+    - port: 5432
+      targetPort: 5432

@@ -48,3 +48,6 @@ docker-data/
 
 # Config files
 config-data/
+
+# Keycloak specific files
+ecommerce-realm.json
